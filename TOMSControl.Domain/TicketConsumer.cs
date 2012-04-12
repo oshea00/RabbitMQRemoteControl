@@ -52,17 +52,23 @@ namespace TOMSControl.Domain
                 model.QueueBind(queue.QueueName, _ticketExchange, _ticketKey);
                 var sub = new Subscription(model, _ticketKey);
 
-                foreach (BasicDeliverEventArgs e in sub)
+                using (conn)
                 {
-                    var msg = Int32.Parse(Encoding.UTF8.GetString(e.Body));
-                    lock (_tickets)
+                    using (model)
                     {
-                        if (!_tickets.ContainsKey(msg))
+                        foreach (BasicDeliverEventArgs e in sub)
                         {
-                            _tickets[msg] = true;
+                            var msg = Int32.Parse(Encoding.UTF8.GetString(e.Body));
+                            lock (_tickets)
+                            {
+                                if (!_tickets.ContainsKey(msg))
+                                {
+                                    _tickets[msg] = true;
+                                }
+                            }
+                            sub.Ack(e);
                         }
                     }
-                    sub.Ack(e);
                 }
             });
         }
