@@ -1,5 +1,9 @@
 _ReSharper
 bin
+*.bin
+*.dat
+*.crc
 obj
 TestResults
 *.suo
+*.svn
