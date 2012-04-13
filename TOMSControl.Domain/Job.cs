@@ -18,17 +18,9 @@ namespace TOMSControl.Domain
                 foreach (var c in Commands)
                 {
                     c.Ticket = ParentWorkFlow.TargetEnvironment.TicketAgent.GetTicket();
-                    c.RoutingKey = BuildRouteKey(c);
+                    c.RoutingKey = ParentWorkFlow.TargetEnvironment.GetRoute(c.CommandQueue);
                     ParentWorkFlow.TargetEnvironment.MessageProducer.Publish(c.CommandMessage());
                 }
         }
-
-        private string BuildRouteKey(Command c)
-        {
-            return ParentWorkFlow.TargetEnvironment.Name + "." + 
-                   ParentWorkFlow.TargetEnvironment.RootRouteKey + "." + 
-                   c.Tag;
-        }
-    
     }
 }

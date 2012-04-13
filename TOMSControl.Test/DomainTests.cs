@@ -11,7 +11,7 @@ namespace TOMSControl.Test
     public class DomainTests
     {
         [TestMethod]
-        public void CommandHasNameAndTag()
+        public void CommandHasNameAndQueue()
         {
             var cmd = new Command("Securities Import","secimport");
             Assert.IsNotNull(cmd.Name);
@@ -51,7 +51,7 @@ namespace TOMSControl.Test
         }
 
         [TestMethod]
-        public void CommandTagHasNoSpaces()
+        public void CommandQueueHasNoSpaces()
         {
             try
             {
@@ -59,7 +59,7 @@ namespace TOMSControl.Test
             }
             catch (Exception ex)
             {
-                Assert.AreEqual("Tag must not be empty or contain whitespace", ex.Message);
+                Assert.AreEqual("Command queue must not be empty or contain whitespace", ex.Message);
             }
         }
 
@@ -72,7 +72,7 @@ namespace TOMSControl.Test
             }
             catch (Exception ex)
             {
-                Assert.AreEqual("Tag must not be empty or contain whitespace", ex.Message);
+                Assert.AreEqual("Command queue must not be empty or contain whitespace", ex.Message);
             }
         }
 
