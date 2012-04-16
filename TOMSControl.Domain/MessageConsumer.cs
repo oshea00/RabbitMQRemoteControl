@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.MessagePatterns;
@@ -35,28 +36,38 @@ namespace TOMSControl.Domain
 
         public void ListenToQueue(string route)
         {
-            var connectionFactory = new ConnectionFactory
+            while (true)
             {
-                HostName = _host,
-                UserName = _username,
-                Password = _password,
-            };
-            var conn = connectionFactory.CreateConnection();
-            var model = conn.CreateModel();
-            var queue = model.QueueDeclare(route, true, false, false, null);
-            var sub = new Subscription(model, route);
-
-            using (conn)
-            {
-                using (model)
+                try
                 {
-                    foreach (BasicDeliverEventArgs e in sub)
+                    var connectionFactory = new ConnectionFactory
                     {
-                        var msg = DeserializeFromJson(Encoding.UTF8.GetString(e.Body));
-                        sub.Ack(e);
-                        if (OnMessageReceived != null)
-                            OnMessageReceived(msg);
+                        HostName = _host,
+                        UserName = _username,
+                        Password = _password,
+                    };
+                    var conn = connectionFactory.CreateConnection();
+                    var model = conn.CreateModel();
+                    var queue = model.QueueDeclare(route, true, false, false, null);
+                    var sub = new Subscription(model, route);
+
+                    using (conn)
+                    {
+                        using (model)
+                        {
+                            foreach (BasicDeliverEventArgs e in sub)
+                            {
+                                var msg = DeserializeFromJson(Encoding.UTF8.GetString(e.Body));
+                                sub.Ack(e);
+                                if (OnMessageReceived != null)
+                                    OnMessageReceived(msg);
+                            }
+                        }
                     }
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(1000);
                 }
             }
         }
