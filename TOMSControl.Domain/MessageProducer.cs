@@ -55,8 +55,9 @@ namespace TOMSControl.Domain
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Unable to connect to RabbitMQ");
             }
         }
 

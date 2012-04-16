@@ -1,6 +1,8 @@
-_ReSharper
+_ReSharper.*
 bin
 *.bin
+*.user
+ModuleIds.xml
 *.dat
 *.crc
 obj

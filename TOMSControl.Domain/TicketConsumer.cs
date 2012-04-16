@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using RabbitMQ.Client.MessagePatterns;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
@@ -37,39 +38,52 @@ namespace TOMSControl.Domain
         {
             Task.Factory.StartNew(() =>
             {
-                var connectionFactory = new ConnectionFactory
+                while (true)
                 {
-                    HostName = _host,
-                    UserName = _username,
-                    Password = _password,
-                };
-                var conn = connectionFactory.CreateConnection();
-                var model = conn.CreateModel();
-                model.ExchangeDeclare(_ticketExchange, "fanout");
-                model.QueueDeclare(_ticketKey, true, false, false, null);
-                model.QueueBind(_ticketKey, _ticketExchange, _ticketKey);
-                var queue = model.QueueDeclare("", false, true, true, null);
-                model.QueueBind(queue.QueueName, _ticketExchange, _ticketKey);
-                var sub = new Subscription(model, _ticketKey);
-
-                using (conn)
-                {
-                    using (model)
+                    try
                     {
-                        foreach (BasicDeliverEventArgs e in sub)
+
+                        var connectionFactory = new ConnectionFactory
                         {
-                            var msg = Int32.Parse(Encoding.UTF8.GetString(e.Body));
-                            lock (_tickets)
+                            HostName = _host,
+                            UserName = _username,
+                            Password = _password,
+                        };
+
+                        var conn = connectionFactory.CreateConnection();
+                        var model = conn.CreateModel();
+                        model.ExchangeDeclare(_ticketExchange, "fanout");
+                        model.QueueDeclare(_ticketKey, true, false, false, null);
+                        model.QueueBind(_ticketKey, _ticketExchange, _ticketKey);
+                        var queue = model.QueueDeclare("", false, true, true, null);
+                        model.QueueBind(queue.QueueName, _ticketExchange, _ticketKey);
+                        var sub = new Subscription(model, _ticketKey);
+
+                        using (conn)
+                        {
+                            using (model)
                             {
-                                if (!_tickets.ContainsKey(msg))
+                                foreach (BasicDeliverEventArgs e in sub)
                                 {
-                                    _tickets[msg] = true;
+                                    var msg = Int32.Parse(Encoding.UTF8.GetString(e.Body));
+                                    lock (_tickets)
+                                    {
+                                        if (!_tickets.ContainsKey(msg))
+                                        {
+                                            _tickets[msg] = true;
+                                        }
+                                    }
+                                    sub.Ack(e);
                                 }
                             }
-                            sub.Ack(e);
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        Thread.Sleep(1000);
+                    }
                 }
+
             });
         }
 
