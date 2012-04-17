@@ -14,7 +14,7 @@ namespace TOMSControl.Domain
     {
         bool IsValidTicket(int ticket);
         void PunchTicket(int ticket);
-        void ListenToQueue();
+        void ListenForTickets();
     }
 
     public class TicketConsumer : ITicketConsumer
@@ -34,7 +34,7 @@ namespace TOMSControl.Domain
             _tickets = new Dictionary<int, bool>();
         }
 
-        public void ListenToQueue()
+        public void ListenForTickets()
         {
             Task.Factory.StartNew(() =>
             {

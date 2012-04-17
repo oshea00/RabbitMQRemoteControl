@@ -7,6 +7,7 @@ namespace TOMSControl.Domain
 {
     public interface ICommandProcessor
     {
+        void ListenForCommand();
     }
 
     public class CommandProcessor : ICommandProcessor
@@ -48,9 +49,12 @@ namespace TOMSControl.Domain
                     }
                 }
             };
-            _environment.MessageConsumer.ListenToQueue(_environment.GetRoute(_routekey));
         }
 
+        public void ListenForCommand()
+        {
+            _environment.MessageConsumer.ListenToQueue(_environment.GetRoute(_routekey));
+        }
 
         public virtual void Log(int ticket, string message)
         {

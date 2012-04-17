@@ -12,8 +12,9 @@ namespace TOMSCommandProcessorConsole
         static void Main(string[] args)
         {
             var environment = new EnvironmentContext();
-            environment.TicketConsumer.ListenToQueue();
+            environment.TicketConsumer.ListenForTickets();
             var consoleProcessor = new ConsoleCommandProcessor(environment, "listshares");
+            consoleProcessor.ListenForCommand();
         }
     }
 }
