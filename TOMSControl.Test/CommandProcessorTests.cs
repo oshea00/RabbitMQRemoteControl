@@ -5,12 +5,13 @@ using System.Text;
 using TOMSControl.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
+using NSubstitute;
 
 namespace TOMSControl.Test
 {
     [TestClass]
     public class CommandProcessorTest
     {
-
+    
     }
 }

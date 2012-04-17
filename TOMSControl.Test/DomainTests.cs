@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TOMSControl.Domain;
+using NSubstitute;
 
 namespace TOMSControl.Test
 {
@@ -128,6 +129,65 @@ namespace TOMSControl.Test
             var e = new EnvironmentContext { RootRouteKey = "tomi" };
             Assert.IsNotNull(e.RootRouteKey);
         }
+
+        [TestMethod]
+        public void EnvironmentBuildsRouteKey()
+        {
+            var env = new EnvironmentContext();
+            Assert.AreEqual("dev.admin.somequeue",env.GetRoute("somequeue"));
+        }
+
+        [TestMethod]
+        public void EnvironmentBuildsResultRouteKey()
+        {
+            var env = new EnvironmentContext();
+            Assert.AreEqual("dev.admin.somequeue.result", env.GetResultRoute("somequeue"));
+        }
+
+        [TestMethod]
+        public void EnvironmentBuildsLogKey()
+        {
+            var env = new EnvironmentContext();
+            Assert.AreEqual("dev.admin.somequeue.log", env.GetLogRoute("somequeue"));
+        }
+
+        [TestMethod]
+        public void MessageConsumerCallsOnMessageReceivedEventWithMessage()
+        {
+            bool eventWasraised = false;
+            IMessageConsumer msgconsumer = Substitute.For<IMessageConsumer>();
+            msgconsumer.OnMessageReceived += (msg) => eventWasraised = true;
+            msgconsumer.OnMessageReceived += Raise.Event<Action<Message>>(new Message());
+            Assert.IsTrue(eventWasraised);
+        }
+
+        [TestMethod]
+        public void JobExecutesCommandUsingATicketAndMessageProducer()
+        {
+            var env = new EnvironmentContext
+            {
+                Name = "atest",
+                RootRouteKey = "admin",
+                TicketAgent = Substitute.For<ITicketAgent>(),
+                MessageProducer = Substitute.For<IMessageProducer>(),
+            };
+
+            env.TicketAgent.GetTicket().Returns(1001);
+
+            var wf = new WorkFlow("Test Workflow", env);
+            var job = new Job { 
+                ParentWorkFlow = wf,
+                Commands = new Command[] { new Command("Test Command","testqueue") },
+                };
+
+            job.Execute();
+
+            Assert.AreEqual(1001, job.Commands[0].Ticket);
+            Assert.AreEqual("atest.admin.testqueue", job.Commands[0].RoutingKey);
+            env.MessageProducer.Received().Publish(Arg.Any<Message>());
+            
+        }
+
 
     }
 }
