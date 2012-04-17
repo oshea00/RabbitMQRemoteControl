@@ -131,6 +131,20 @@ namespace TOMSControl.Test
         }
 
         [TestMethod]
+        public void EnvironmentHasUsername()
+        {
+            var e = new EnvironmentContext();
+            Assert.IsNotNull(e.Username);
+        }
+
+        [TestMethod]
+        public void EnvironmentHasPassword()
+        {
+            var e = new EnvironmentContext();
+            Assert.IsNotNull(e.Password);
+        }
+
+        [TestMethod]
         public void EnvironmentBuildsRouteKey()
         {
             var env = new EnvironmentContext();

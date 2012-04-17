@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using System.Collections.Specialized;
 
 namespace TOMSControl.Domain
 {
@@ -23,8 +24,10 @@ namespace TOMSControl.Domain
             Name = ConfigurationManager.AppSettings.Get("name");
             RootRouteKey = ConfigurationManager.AppSettings.Get("rootroute");
             Host = ConfigurationManager.AppSettings.Get("host");
-            Username = ConfigurationManager.AppSettings.Get("username");
-            Password = ConfigurationManager.AppSettings.Get("password");
+
+            var secureAppSettings = (NameValueCollection) ConfigurationManager.GetSection("secureAppSettings");
+            Username = secureAppSettings["username"];
+            Password = secureAppSettings["password"];
 
             MessageProducer = new MessageProducer(Host, Username, Password);
             MessageConsumer = new MessageConsumer(Host, Username, Password);

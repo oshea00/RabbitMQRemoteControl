@@ -9,3 +9,4 @@ obj
 TestResults
 *.suo
 *.svn
+*.vsmdi
