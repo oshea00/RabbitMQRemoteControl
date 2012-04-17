@@ -12,7 +12,9 @@ namespace TOMSControl.Domain
         {
         }
 
-        protected override void HandleMessage(Message m)
+        public event Action<string> OnOutputLineReady;
+
+        public override void HandleMessage(Message m)
         {
             var msg = (CommandMessage) m;
 
@@ -32,22 +34,13 @@ namespace TOMSControl.Domain
             p.OutputDataReceived += new DataReceivedEventHandler((o, e) =>
             {
                 Console.WriteLine(e.Data);
-                SendOutputLine(msg.Ticket, e.Data);
+                if (OnOutputLineReady != null)
+                    OnOutputLineReady(e.Data);
             });
 
             p.Start();
             p.BeginOutputReadLine();
             p.WaitForExit();
-        }
-
-        protected void SendOutputLine(int ticket, string line)
-        {
-            _environment.MessageProducer.Publish(new CommandResultMessage
-            {
-                RoutingKey = _environment.GetResultRoute(_routekey),
-                Ticket = ticket,
-                CommandResult = line,
-            });
         }
     }
 }
