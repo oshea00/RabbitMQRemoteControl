@@ -58,9 +58,9 @@ namespace TOMSControl.Domain
                             foreach (BasicDeliverEventArgs e in sub)
                             {
                                 var msg = DeserializeFromJson(Encoding.UTF8.GetString(e.Body));
-                                sub.Ack(e);
                                 if (OnMessageReceived != null)
                                     OnMessageReceived(msg);
+                                sub.Ack(e);
                             }
                         }
                     }
