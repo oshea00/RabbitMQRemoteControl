@@ -30,17 +30,15 @@ namespace TOMSCommandConsole
                 }
             };
 
+            // Listen and respond to command result messages
             environment.MessageConsumer.OnMessageReceived += (msg) =>
             {
                 var r = (CommandResultMessage)msg;
                 Console.WriteLine(r.CommandResult);
             };
+            environment.MessageConsumer.ListenToQueueAsync(environment.GetResultRoute("listshares"));
 
-            Task.Factory.StartNew(() =>
-            {
-                environment.MessageConsumer.ListenToQueue(environment.GetResultRoute("listshares"));
-            });
-
+            // Execute the workflow
             do
             {
                 Console.WriteLine("Hit Enter To Send Command");

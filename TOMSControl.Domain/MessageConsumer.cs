@@ -16,6 +16,7 @@ namespace TOMSControl.Domain
     {
         event Action<Message> OnMessageReceived;
         void ListenToQueue(string route);
+        void ListenToQueueAsync(string route);
     }
 
     public class MessageConsumer : IMessageConsumer
@@ -32,6 +33,11 @@ namespace TOMSControl.Domain
             _username = username;
             _password = password;
             _serializer = new DataContractJsonSerializer(typeof(Message));
+        }
+
+        public void ListenToQueueAsync(string route)
+        {
+            Task.Factory.StartNew(() => ListenToQueue(route));
         }
 
         public void ListenToQueue(string route)
