@@ -25,7 +25,9 @@ namespace TOMSCommandProcessorConsole
                     CommandResult = line,
                 },environment.Credential);
 
-            consoleProcessor.ListenForCommand();
+            var task = consoleProcessor.ListenForCommand();
+
+            Task.WaitAll(task);
         }
     }
 }

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TOMSControl.Domain
 {
     public interface ICommandProcessor
     {
-        void ListenForCommand();
+        Task ListenForCommand();
     }
 
     public class CommandProcessor : ICommandProcessor
@@ -54,9 +55,9 @@ namespace TOMSControl.Domain
             };
         }
 
-        public void ListenForCommand()
+        public Task ListenForCommand()
         {
-            _environment.MessageConsumer.ListenToQueue(
+            return _environment.MessageConsumer.ListenToQueueAsync(
                 _environment.GetRoute(RouteKey),
                 _environment.Credential);
         }
