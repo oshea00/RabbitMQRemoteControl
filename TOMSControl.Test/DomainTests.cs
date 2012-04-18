@@ -229,5 +229,24 @@ namespace TOMSControl.Test
             Assert.AreNotEqual(0, watcher.GetTasks().Count());
         }
 
+        [TestMethod]
+        public void WorkFlowResultWatcherAcceptsResultAction()
+        {
+            var env = new EnvironmentContext();
+            var workflowResultWatcher = new WorkFlowResultWatcher(env);
+            workflowResultWatcher.ResultAction = (msg) =>
+            {
+                var r = (CommandResultMessage)msg;
+                Console.WriteLine(r.CommandResult);
+            };
+        }
+
+        [TestMethod]
+        public void WorkFlowResultWatcherCanWatchResultQueues()
+        {
+            var wfwatcher = Substitute.For<IWorkFlowResultWatcher>();
+            wfwatcher.AddCommandQueue(Arg.Any<string>());
+        }
+
     }
 }
