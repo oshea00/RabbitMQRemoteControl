@@ -18,15 +18,12 @@ namespace TOMSCommandProcessorConsole
             var consoleProcessor = new ConsoleCommandProcessor(environment, "listshares");
 
             consoleProcessor.OnOutputLineReady += (line) =>
-            {
                 environment.MessageProducer.Publish(new CommandResultMessage
                 {
                     RoutingKey = environment.GetResultRoute(consoleProcessor.RouteKey),
                     Ticket = consoleProcessor.Ticket,
                     CommandResult = line,
-                },
-                environment.Credential);
-            };
+                },environment.Credential);
 
             consoleProcessor.ListenForCommand();
         }
