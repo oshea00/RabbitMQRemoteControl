@@ -36,7 +36,9 @@ namespace TOMSCommandConsole
                 var r = (CommandResultMessage)msg;
                 Console.WriteLine(r.CommandResult);
             };
-            environment.MessageConsumer.ListenToQueueAsync(environment.GetResultRoute("listshares"));
+            environment.MessageConsumer.ListenToQueueAsync(
+                environment.GetResultRoute("listshares"),
+                environment.Credential);
 
             // Execute the workflow
             do

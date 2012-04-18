@@ -15,7 +15,7 @@ namespace TOMSControl.Test
         public void MessageProducerCanSerializeToJson()
         {
             // Serialize
-            var ex = new MessageProducer(null,null,null);
+            var ex = new MessageProducer();
             var json = ex.SerializeToJson(new CommandMessage() 
             {  RoutingKey = "test.route", ExecuteFile = "net.exe" });
             Assert.IsTrue(json.Contains("CommandMessage"));
@@ -25,10 +25,10 @@ namespace TOMSControl.Test
         public void MessageConsumerCanDeserializeFromJson()
         {
             // Serialize
-            var ex = new MessageProducer(null,null,null);
+            var ex = new MessageProducer();
             var json = ex.SerializeToJson(new CommandMessage() { RoutingKey = "test.route", ExecuteFile = "net.exe" });
             // DeSerialize
-            var consumer = new MessageConsumer(null,null,null);
+            var consumer = new MessageConsumer();
             var msg = consumer.DeserializeFromJson(json);
             Assert.IsTrue(msg is CommandMessage);
             Assert.AreEqual("net.exe", ((CommandMessage)msg).ExecuteFile);

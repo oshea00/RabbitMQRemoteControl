@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TOMSControl.Test", "TOMSCon
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{94E9BD4F-4930-445F-A718-0593915B8458}"
 	ProjectSection(SolutionItems) = preProject
+		encryptconfigs.bat = encryptconfigs.bat
 		Local.testsettings = Local.testsettings
 		TOMSControllSolution2.vsmdi = TOMSControllSolution2.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings

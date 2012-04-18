@@ -7,6 +7,7 @@ using RabbitMQ.Client.MessagePatterns;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
+using System.Net;
 
 namespace TOMSControl.Domain
 {
@@ -14,7 +15,7 @@ namespace TOMSControl.Domain
     {
         bool IsValidTicket(int ticket);
         void PunchTicket(int ticket);
-        void ListenForTickets();
+        void ListenForTickets(NetworkCredential credential);
     }
 
     public class TicketConsumer : ITicketConsumer
@@ -22,19 +23,13 @@ namespace TOMSControl.Domain
         Dictionary<int, bool> _tickets;
         protected const string _ticketExchange = "ticketExchange";
         protected const string _ticketKey = "ticket";
-        string _host;
-        string _username;
-        string _password;
 
-        public TicketConsumer(string host, string username, string password)
+        public TicketConsumer()
         {
-            _host = host;
-            _username = username;
-            _password = password;
             _tickets = new Dictionary<int, bool>();
         }
 
-        public void ListenForTickets()
+        public void ListenForTickets(NetworkCredential credential)
         {
             Task.Factory.StartNew(() =>
             {
@@ -45,9 +40,9 @@ namespace TOMSControl.Domain
 
                         var connectionFactory = new ConnectionFactory
                         {
-                            HostName = _host,
-                            UserName = _username,
-                            Password = _password,
+                            HostName = credential.Domain,
+                            UserName = credential.UserName,
+                            Password = credential.Password,
                         };
 
                         var conn = connectionFactory.CreateConnection();

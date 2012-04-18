@@ -56,7 +56,9 @@ namespace TOMSControl.Domain
 
         public void ListenForCommand()
         {
-            _environment.MessageConsumer.ListenToQueue(_environment.GetRoute(RouteKey));
+            _environment.MessageConsumer.ListenToQueue(
+                _environment.GetRoute(RouteKey),
+                _environment.Credential);
         }
 
         public virtual void Log(string message)
@@ -67,7 +69,8 @@ namespace TOMSControl.Domain
                     RoutingKey = _environment.GetLogRoute(RouteKey),
                     Ticket = Ticket,
                     CommandResult = message,
-                });
+                },
+                _environment.Credential);
         }
 
         public virtual void HandleMessage(Message msg)

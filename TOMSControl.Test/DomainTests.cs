@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TOMSControl.Domain;
 using NSubstitute;
+using System.Net;
 
 namespace TOMSControl.Test
 {
@@ -134,14 +135,14 @@ namespace TOMSControl.Test
         public void EnvironmentHasUsername()
         {
             var e = new EnvironmentContext();
-            Assert.IsNotNull(e.Username);
+            Assert.IsNotNull(e.Credential.UserName);
         }
 
         [TestMethod]
         public void EnvironmentHasPassword()
         {
             var e = new EnvironmentContext();
-            Assert.IsNotNull(e.Password);
+            Assert.IsNotNull(e.Credential.Password);
         }
 
         [TestMethod]
@@ -186,7 +187,7 @@ namespace TOMSControl.Test
                 MessageProducer = Substitute.For<IMessageProducer>(),
             };
 
-            env.TicketAgent.GetTicket().Returns(1001);
+            env.TicketAgent.GetTicket(env.Credential).Returns(1001);
 
             var wf = new WorkFlow("Test Workflow", env);
             var job = new Job { 
@@ -198,7 +199,7 @@ namespace TOMSControl.Test
 
             Assert.AreEqual(1001, job.Commands[0].Ticket);
             Assert.AreEqual("atest.admin.testqueue", job.Commands[0].RoutingKey);
-            env.MessageProducer.Received().Publish(Arg.Any<Message>());
+            env.MessageProducer.Received().Publish(Arg.Any<Message>(),Arg.Any<NetworkCredential>());
             
         }
 

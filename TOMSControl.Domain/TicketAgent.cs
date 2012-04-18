@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.MessagePatterns;
 using RabbitMQ.Client.Events;
+using System.Net;
 
 namespace TOMSControl.Domain
 {
     public interface ITicketAgent
     {
-        int GetTicket();
+        int GetTicket(NetworkCredential credential);
     }
 
     public class TicketAgent : ITicketAgent
@@ -19,19 +20,13 @@ namespace TOMSControl.Domain
         protected Random _rand;
         protected const string _ticketExchange = "ticketExchange";
         protected const string _ticketKey = "ticket";
-        string _host;
-        string _username;
-        string _password;
 
-        public TicketAgent (string host, string username, string password)
+        public TicketAgent ()
 	    {
-            _host = host;
-            _username = username;
-            _password = password;
             _rand = new Random((int)DateTime.Now.Ticks);
 	    }
 
-        public int GetTicket()
+        public int GetTicket(NetworkCredential credential)
         {
             try
             {
@@ -40,9 +35,9 @@ namespace TOMSControl.Domain
 
                 var connectionFactory = new ConnectionFactory
                 {
-                    HostName = _host,
-                    UserName = _username,
-                    Password = _password,
+                    HostName = credential.Domain,
+                    UserName = credential.UserName,
+                    Password = credential.Password,
                 };
                 var conn = connectionFactory.CreateConnection();
                 var model = conn.CreateModel();

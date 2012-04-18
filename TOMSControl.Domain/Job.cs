@@ -14,12 +14,14 @@ namespace TOMSControl.Domain
 
         public void Execute()
         {
+            var env = ParentWorkFlow.TargetEnvironment;
+            var credential = env.Credential;
             if (Commands != null)
                 foreach (var c in Commands)
                 {
-                    c.Ticket = ParentWorkFlow.TargetEnvironment.TicketAgent.GetTicket();
-                    c.RoutingKey = ParentWorkFlow.TargetEnvironment.GetRoute(c.CommandQueue);
-                    ParentWorkFlow.TargetEnvironment.MessageProducer.Publish(c.CommandMessage());
+                    c.Ticket = env.TicketAgent.GetTicket(credential);
+                    c.RoutingKey = env.GetRoute(c.CommandQueue);
+                    env.MessageProducer.Publish(c.CommandMessage(),credential);
                 }
         }
     }

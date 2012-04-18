@@ -9,38 +9,33 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.MessagePatterns;
 using RabbitMQ.Client.Events;
+using System.Net;
 
 namespace TOMSControl.Domain
 {
     public interface IMessageConsumer
     {
         event Action<Message> OnMessageReceived;
-        void ListenToQueue(string route);
-        void ListenToQueueAsync(string route);
+        void ListenToQueue(string route, NetworkCredential credential);
+        void ListenToQueueAsync(string route, NetworkCredential credential);
     }
 
     public class MessageConsumer : IMessageConsumer
     {
         DataContractJsonSerializer _serializer;
-        string _host;
-        string _username;
-        string _password;
         public event Action<Message> OnMessageReceived;
 
-        public MessageConsumer(string host, string username, string password)
+        public MessageConsumer()
         {
-            _host = host;
-            _username = username;
-            _password = password;
             _serializer = new DataContractJsonSerializer(typeof(Message));
         }
 
-        public void ListenToQueueAsync(string route)
+        public void ListenToQueueAsync(string route,NetworkCredential credential)
         {
-            Task.Factory.StartNew(() => ListenToQueue(route));
+            Task.Factory.StartNew(() => ListenToQueue(route,credential));
         }
 
-        public void ListenToQueue(string route)
+        public void ListenToQueue(string route,NetworkCredential credential)
         {
             while (true)
             {
@@ -48,9 +43,9 @@ namespace TOMSControl.Domain
                 {
                     var connectionFactory = new ConnectionFactory
                     {
-                        HostName = _host,
-                        UserName = _username,
-                        Password = _password,
+                        HostName = credential.Domain,
+                        UserName = credential.UserName,
+                        Password = credential.Password,
                     };
                     var conn = connectionFactory.CreateConnection();
                     var model = conn.CreateModel();

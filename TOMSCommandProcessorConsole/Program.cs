@@ -13,7 +13,7 @@ namespace TOMSCommandProcessorConsole
         {
             var environment = new EnvironmentContext();
 
-            environment.TicketConsumer.ListenForTickets();
+            environment.TicketConsumer.ListenForTickets(environment.Credential);
 
             var consoleProcessor = new ConsoleCommandProcessor(environment, "listshares");
 
@@ -24,7 +24,8 @@ namespace TOMSCommandProcessorConsole
                     RoutingKey = environment.GetResultRoute(consoleProcessor.RouteKey),
                     Ticket = consoleProcessor.Ticket,
                     CommandResult = line,
-                });
+                },
+                environment.Credential);
             };
 
             consoleProcessor.ListenForCommand();
