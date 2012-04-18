@@ -14,7 +14,7 @@ namespace TOMSCommandConsole
             var environment = new EnvironmentContext();
 
             // Setup workflow with a job and a command
-            var wf = new WorkFlow("Get Current Network Shares", environment)
+            var wf = new WorkFlow("Get Current Network Shares and Windows Directory", environment)
             {
                 Jobs = new List<Job> { 
                          new Job {
@@ -25,20 +25,28 @@ namespace TOMSCommandConsole
                               ExecuteFile = @"c:\windows\system32\net.exe",
                               Arguments = "share",
                            },
+                           new Command("NET Command","listdir") 
+                           {  
+                              ExecuteFile = @"c:\windows\system32\cmd.exe",
+                              Arguments = @"/c dir",
+                              WorkingDirectory = @"c:\windows",
+                           },
                          }
                      }
                 }
             };
 
+            var workflowResultWatcher = new WorkFlowResultWatcher(environment);
+
             // Listen and respond to command result messages
-            environment.MessageConsumer.OnMessageReceived += (msg) =>
+            workflowResultWatcher.ResultAction = (msg) =>
             {
                 var r = (CommandResultMessage)msg;
                 Console.WriteLine(r.CommandResult);
             };
-            environment.MessageConsumer.ListenToQueueAsync(
-                environment.GetResultRoute("listshares"),
-                environment.Credential);
+
+            workflowResultWatcher.AddCommandQueue("listshares");
+            workflowResultWatcher.AddCommandQueue("listdir");
 
             // Execute the workflow
             do

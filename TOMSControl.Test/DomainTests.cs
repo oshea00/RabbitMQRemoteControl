@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TOMSControl.Domain;
 using NSubstitute;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace TOMSControl.Test
 {
@@ -203,6 +204,30 @@ namespace TOMSControl.Test
             
         }
 
+        [TestMethod]
+        public void CommandWatcherWatchesCommands()
+        {
+            var watcher = Substitute.For<ICommandQueueWatcher>();
+            watcher.AddWatchedQueue(Arg.Any<string>()).Returns<Task>(Arg.Any<Task>());
+        }
+
+        [TestMethod]
+        public void CommandWatcherReturnsTaskWhenQueueIsAdded()
+        {
+            var env = new EnvironmentContext();
+            var watcher = new CommandQueueWatcher(env);
+            var task = watcher.AddWatchedQueue("testqueue");
+            Assert.IsNotNull(task);
+        }
+
+        [TestMethod]
+        public void CommandWatcherReturnsListOfWatchedQueueTasks()
+        {
+            var env = new EnvironmentContext();
+            var watcher = new CommandQueueWatcher(env);
+            var task = watcher.AddWatchedQueue("testqueue");
+            Assert.AreNotEqual(0, watcher.GetTasks().Count());
+        }
 
     }
 }

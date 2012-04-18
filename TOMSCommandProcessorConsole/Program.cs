@@ -15,19 +15,12 @@ namespace TOMSCommandProcessorConsole
 
             environment.TicketConsumer.ListenForTickets(environment.Credential);
 
-            var consoleProcessor = new ConsoleCommandProcessor(environment, "listshares");
+            var commandWatcher = new CommandQueueWatcher(environment);
 
-            consoleProcessor.OnOutputLineReady += (line) =>
-                environment.MessageProducer.Publish(new CommandResultMessage
-                {
-                    RoutingKey = environment.GetResultRoute(consoleProcessor.RouteKey),
-                    Ticket = consoleProcessor.Ticket,
-                    CommandResult = line,
-                },environment.Credential);
+            commandWatcher.AddWatchedQueue("listshares");
+            commandWatcher.AddWatchedQueue("listdir");
 
-            var task = consoleProcessor.ListenForCommand();
-
-            Task.WaitAll(task);
+            Task.WaitAll(commandWatcher.GetTasks());
         }
     }
 }

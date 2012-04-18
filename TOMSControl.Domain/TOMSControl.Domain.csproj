@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="CommandProcessor.cs" />
+    <Compile Include="CommandQueueWatcher.cs" />
     <Compile Include="ConsoleCommandProcessor.cs" />
     <Compile Include="EnvironmentContext.cs" />
     <Compile Include="Job.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="TicketAgent.cs" />
     <Compile Include="TicketConsumer.cs" />
     <Compile Include="WorkFlow.cs" />
+    <Compile Include="WorkFlowResultWatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
