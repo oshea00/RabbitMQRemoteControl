@@ -49,7 +49,7 @@ namespace TOMSCommandConsole
             } while (true);
 
             foreach (var line in workflowResultWatcher.GetAllResults())
-                Console.WriteLine(line);
+                Console.WriteLine(line.CommandResult);
         }
     }
 }

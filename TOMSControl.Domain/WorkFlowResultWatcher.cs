@@ -9,15 +9,15 @@ namespace TOMSControl.Domain
     public interface IWorkFlowResultWatcher
     {
         void AddCommandResultQueue(EnvironmentContext environment, string queueName);
-        IList<string> GetAllResults();
-        IList<string> GetResultsByQueue(string queueName);
+        IList<CommandResultMessage> GetAllResults();
+        IList<CommandResultMessage> GetResultsByQueue(string queueName);
         IList<Task> Tasks { get; set; }
     }
 
     public class WorkFlowResultWatcher : IWorkFlowResultWatcher
     {
         object _locker = new object();
-        Dictionary<string, List<string>> _results;
+        Dictionary<string, List<CommandResultMessage>> _results;
         public IList<Task> Tasks { get; set; }
 
         public WorkFlowResultWatcher(WorkFlow wf)
@@ -25,7 +25,7 @@ namespace TOMSControl.Domain
             if (wf == null)
                 throw new Exception("Workflow must not be null");
 
-            _results = new Dictionary<string, List<string>>();
+            _results = new Dictionary<string, List<CommandResultMessage>>();
             Tasks = new List<Task>();
 
             var cmds = wf.Jobs.SelectMany(j => j.Commands).ToList();
@@ -45,9 +45,9 @@ namespace TOMSControl.Domain
                     var message = (CommandResultMessage) msg;
                     if (!_results.ContainsKey(queueName))
                     {
-                        _results[queueName] = new List<string>();
+                        _results[queueName] = new List<CommandResultMessage>();
                     }
-                    _results[queueName].Add(message.CommandResult);
+                    _results[queueName].Add(message);
                 }
             };
  
@@ -56,9 +56,9 @@ namespace TOMSControl.Domain
                 environment.Credential));
         }
 
-        public IList<string> GetAllResults()
+        public IList<CommandResultMessage> GetAllResults()
         {
-            var all = new List<string>();
+            var all = new List<CommandResultMessage>();
             foreach (var key in _results.Keys)
             {
                 foreach (var line in _results[key])
@@ -69,11 +69,11 @@ namespace TOMSControl.Domain
             return all;
         }
 
-        public IList<string> GetResultsByQueue(string queueName)
+        public IList<CommandResultMessage> GetResultsByQueue(string queueName)
         {
             if (_results.ContainsKey(queueName))
                 return _results[queueName];
-            return new List<string>();
+            return new List<CommandResultMessage>();
         }
     }
 }
