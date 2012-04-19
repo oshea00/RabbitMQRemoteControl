@@ -18,7 +18,7 @@ namespace TOMSCommandProcessorConsole
             if (args.Count() == 0)
                 commandWatcher = new CommandQueueWatcher(environment, new[] { "listshares", "listdir" });
             else
-                commandWatcher = new CommandQueueWatcher(environment, new[] { args[0] });
+                commandWatcher = new CommandQueueWatcher(environment, args);
 
             Task.WaitAll(commandWatcher.GetTasks());
         }
