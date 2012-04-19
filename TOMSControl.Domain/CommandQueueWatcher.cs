@@ -16,22 +16,26 @@ namespace TOMSControl.Domain
     {
         EnvironmentContext _environment;
         List<Task> _tasks;
+        IMessageProducer _messageProducer;
 
-        public CommandQueueWatcher(EnvironmentContext environment)
+        public CommandQueueWatcher(EnvironmentContext environment, IList<string> queueNames)
         {
+            _messageProducer = new MessageProducer();
             _environment = environment;
             _tasks = new List<Task>();
+            foreach (var queueName in queueNames ?? new List<string>())
+                AddWatchedQueue(queueName);
         }
 
         public Task AddWatchedQueue(string queueName)
         {
             var consoleProcessor = new ConsoleCommandProcessor(_environment, queueName);
 
-            consoleProcessor.OnOutputLineReady += (line) =>
-                _environment.MessageProducer.Publish(new CommandResultMessage
+            consoleProcessor.OnOutputLineReady += (ticket,line) =>
+                _messageProducer.Publish(new CommandResultMessage
                 {
                     RoutingKey = _environment.GetResultRoute(consoleProcessor.RouteKey),
-                    Ticket = consoleProcessor.Ticket,
+                    Ticket = ticket,
                     CommandResult = line,
                 }, _environment.Credential);
 

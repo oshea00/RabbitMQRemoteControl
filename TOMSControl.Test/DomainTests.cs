@@ -178,17 +178,13 @@ namespace TOMSControl.Test
         }
 
         [TestMethod]
-        public void JobExecutesCommandUsingATicketAndMessageProducer()
+        public void JobExecutesCommandUsingAMessageProducer()
         {
             var env = new EnvironmentContext
             {
                 Name = "atest",
                 RootRouteKey = "admin",
-                TicketAgent = Substitute.For<ITicketAgent>(),
-                MessageProducer = Substitute.For<IMessageProducer>(),
             };
-
-            env.TicketAgent.GetTicket(env.Credential).Returns(1001);
 
             var wf = new WorkFlow("Test Workflow", env);
             var job = new Job { 
@@ -196,11 +192,11 @@ namespace TOMSControl.Test
                 Commands = new Command[] { new Command("Test Command","testqueue") },
                 };
 
+            job.MessageProducer = Substitute.For<IMessageProducer>();
             job.Execute();
 
-            Assert.AreEqual(1001, job.Commands[0].Ticket);
             Assert.AreEqual("atest.admin.testqueue", job.Commands[0].RoutingKey);
-            env.MessageProducer.Received().Publish(Arg.Any<Message>(),Arg.Any<NetworkCredential>());
+            job.MessageProducer.Received().Publish(Arg.Any<Message>(),Arg.Any<NetworkCredential>());
             
         }
 
@@ -215,7 +211,7 @@ namespace TOMSControl.Test
         public void CommandWatcherReturnsTaskWhenQueueIsAdded()
         {
             var env = new EnvironmentContext();
-            var watcher = new CommandQueueWatcher(env);
+            var watcher = new CommandQueueWatcher(env,null);
             var task = watcher.AddWatchedQueue("testqueue");
             Assert.IsNotNull(task);
         }
@@ -224,28 +220,28 @@ namespace TOMSControl.Test
         public void CommandWatcherReturnsListOfWatchedQueueTasks()
         {
             var env = new EnvironmentContext();
-            var watcher = new CommandQueueWatcher(env);
-            var task = watcher.AddWatchedQueue("testqueue");
+            var watcher = new CommandQueueWatcher(env, new[] { "testqueue" });
             Assert.AreNotEqual(0, watcher.GetTasks().Count());
-        }
-
-        [TestMethod]
-        public void WorkFlowResultWatcherAcceptsResultAction()
-        {
-            var env = new EnvironmentContext();
-            var workflowResultWatcher = new WorkFlowResultWatcher(env);
-            workflowResultWatcher.ResultAction = (msg) =>
-            {
-                var r = (CommandResultMessage)msg;
-                Console.WriteLine(r.CommandResult);
-            };
         }
 
         [TestMethod]
         public void WorkFlowResultWatcherCanWatchResultQueues()
         {
             var wfwatcher = Substitute.For<IWorkFlowResultWatcher>();
-            wfwatcher.AddCommandQueue(Arg.Any<string>());
+            wfwatcher.AddCommandResultQueue(Arg.Any<EnvironmentContext>(),Arg.Any<string>());
+        }
+
+        [TestMethod]
+        public void WorkFlowResultWatcherMustHaveNonNullWorkflow()
+        {
+            try
+            {
+                var wf = new WorkFlowResultWatcher(null);
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("Workflow must not be null", ex.Message);
+            }
         }
 
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Threading;
 
 namespace TOMSControl.Domain
 {
@@ -12,7 +13,7 @@ namespace TOMSControl.Domain
         {
         }
 
-        public event Action<string> OnOutputLineReady;
+        public event Action<Guid,string> OnOutputLineReady;
 
         public override void HandleMessage(Message m)
         {
@@ -35,12 +36,13 @@ namespace TOMSControl.Domain
             {
                 Console.WriteLine(e.Data);
                 if (OnOutputLineReady != null)
-                    OnOutputLineReady(e.Data);
+                    OnOutputLineReady(msg.Ticket,e.Data);
             });
 
             p.Start();
             p.BeginOutputReadLine();
             p.WaitForExit();
+
         }
     }
 }

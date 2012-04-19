@@ -14,7 +14,7 @@ namespace TOMSControl.Domain
         [DataMember]
         public string RoutingKey { get; set; }
         [DataMember]
-        public int Ticket { get; set; }
+        public Guid Ticket { get; set; }
     }
 
     [DataContract]

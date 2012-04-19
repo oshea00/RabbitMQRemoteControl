@@ -13,10 +13,6 @@ namespace TOMSControl.Domain
         public string Name { get; set; }
         public string RootRouteKey { get; set; }
         public NetworkCredential Credential { get; set; }
-        public IMessageProducer MessageProducer { get; set; }
-        public IMessageConsumer MessageConsumer { get; set; }
-        public ITicketAgent TicketAgent { get; set; }
-        public ITicketConsumer TicketConsumer { get; set; }
 
         public EnvironmentContext()
         {
@@ -31,11 +27,6 @@ namespace TOMSControl.Domain
                   UserName = Username,
                   Password = Password
             };
-
-            MessageProducer = new MessageProducer();
-            MessageConsumer = new MessageConsumer();
-            TicketAgent = new TicketAgent();
-            TicketConsumer = new TicketConsumer();
         }
 
         public string GetRoute(string queue)

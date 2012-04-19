@@ -13,7 +13,7 @@ namespace TOMSControl.Domain
         public string ExecuteFile { get; set; }
         public string WorkingDirectory { get; set; }
         public string Arguments { get; set; }
-        public int    Ticket { get; set; }
+        public Guid   Ticket { get; set; }
 
         public Command(string name, string commandqueue)
         {

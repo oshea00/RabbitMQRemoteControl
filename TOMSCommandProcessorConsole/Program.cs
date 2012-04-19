@@ -13,12 +13,12 @@ namespace TOMSCommandProcessorConsole
         {
             var environment = new EnvironmentContext();
 
-            environment.TicketConsumer.ListenForTickets(environment.Credential);
+            CommandQueueWatcher commandWatcher;
 
-            var commandWatcher = new CommandQueueWatcher(environment);
-
-            commandWatcher.AddWatchedQueue("listshares");
-            commandWatcher.AddWatchedQueue("listdir");
+            if (args.Count() == 0)
+                commandWatcher = new CommandQueueWatcher(environment, new[] { "listshares", "listdir" });
+            else
+                commandWatcher = new CommandQueueWatcher(environment, new[] { args[0] });
 
             Task.WaitAll(commandWatcher.GetTasks());
         }

@@ -7,10 +7,15 @@ namespace TOMSControl.Domain
 {
     public class Job
     {
-        
+        public IMessageProducer MessageProducer {get; set;}   
         public WorkFlow ParentWorkFlow { get; set; }
         public string Name { get; set; }
         public IList<Command> Commands;
+
+        public Job()
+        {
+            MessageProducer = new MessageProducer();
+        }
 
         public void Execute()
         {
@@ -19,9 +24,9 @@ namespace TOMSControl.Domain
             if (Commands != null)
                 foreach (var c in Commands)
                 {
-                    c.Ticket = env.TicketAgent.GetTicket(credential);
+                    c.Ticket = Guid.NewGuid();
                     c.RoutingKey = env.GetRoute(c.CommandQueue);
-                    env.MessageProducer.Publish(c.CommandMessage(),credential);
+                    MessageProducer.Publish(c.CommandMessage(),credential);
                 }
         }
     }

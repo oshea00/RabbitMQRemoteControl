@@ -55,8 +55,6 @@
     <Compile Include="MessageProducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages.cs" />
-    <Compile Include="TicketAgent.cs" />
-    <Compile Include="TicketConsumer.cs" />
     <Compile Include="WorkFlow.cs" />
     <Compile Include="WorkFlowResultWatcher.cs" />
   </ItemGroup>

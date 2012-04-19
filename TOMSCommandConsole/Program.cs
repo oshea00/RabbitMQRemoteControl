@@ -36,26 +36,20 @@ namespace TOMSCommandConsole
                 }
             };
 
-            var workflowResultWatcher = new WorkFlowResultWatcher(environment);
-
-            // Listen and respond to command result messages
-            workflowResultWatcher.ResultAction = (msg) =>
-            {
-                var r = (CommandResultMessage)msg;
-                Console.WriteLine(r.CommandResult);
-            };
-
-            workflowResultWatcher.AddCommandQueue("listshares");
-            workflowResultWatcher.AddCommandQueue("listdir");
+            // Listen for results
+            var workflowResultWatcher = new WorkFlowResultWatcher(wf);
 
             // Execute the workflow
             do
             {
-                Console.WriteLine("Hit Enter To Send Command");
-                Console.ReadLine();
+                Console.WriteLine("Hit Enter To Execute Workflow");
+                if (Console.ReadLine()=="q")
+                    break;
                 wf.Execute();
             } while (true);
 
+            foreach (var line in workflowResultWatcher.GetAllResults())
+                Console.WriteLine(line);
         }
     }
 }

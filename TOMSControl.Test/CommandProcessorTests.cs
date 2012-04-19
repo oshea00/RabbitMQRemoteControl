@@ -21,7 +21,7 @@ namespace TOMSControl.Test
             var consoleCmd = new ConsoleCommandProcessor(
                 new EnvironmentContext { Name = "prod", RootRouteKey = "admin" }, "listshare");
 
-            consoleCmd.OnOutputLineReady += (line) =>
+            consoleCmd.OnOutputLineReady += (ticket,line) =>
             {
                 lines++;
             };

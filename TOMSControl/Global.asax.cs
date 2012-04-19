@@ -43,7 +43,6 @@ namespace TOMSControl
             {
                 Name = "prod",
                 RootRouteKey = "admin",
-                MessageProducer = new MessageProducer()
             };
 
             // Setup workflow with a job and a command

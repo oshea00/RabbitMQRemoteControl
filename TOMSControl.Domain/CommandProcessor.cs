@@ -14,12 +14,15 @@ namespace TOMSControl.Domain
     public class CommandProcessor : ICommandProcessor
     {
         protected EnvironmentContext _environment;
-
+        protected IMessageConsumer MessageConsumer { get; set; }
+        protected IMessageProducer MessageProducer { get; set; }
         public string RouteKey { get; set; }
-        public int Ticket { get; set; }
 
         public CommandProcessor(EnvironmentContext context,string routekey)
         {
+            MessageConsumer = new MessageConsumer();
+            MessageProducer = new MessageProducer();
+
             if (String.IsNullOrEmpty(routekey))
                 throw new Exception("Route key must not be null");
 
@@ -28,28 +31,20 @@ namespace TOMSControl.Domain
 
             _environment = context;
             RouteKey = routekey;
-            _environment.MessageConsumer.OnMessageReceived += (msg) =>
+            MessageConsumer.OnMessageReceived += (msg) =>
             {
                 if (msg is CommandMessage)
                 {
-                    Ticket = msg.Ticket;
                     try
                     {
                         if (msg.RoutingKey.Equals(_environment.GetRoute(RouteKey),StringComparison.CurrentCultureIgnoreCase))
                         {
-                            if (_environment.TicketConsumer.IsValidTicket(Ticket))
-                            {
-                                HandleMessage(msg);
-                            }
-                            else
-                            {
-                                Log("Invalid Ticket on Command");
-                            }
+                              HandleMessage(msg);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Log(ex.Message);
+                        Log(msg.Ticket,ex.Message);
                     }
                 }
             };
@@ -57,18 +52,18 @@ namespace TOMSControl.Domain
 
         public Task ListenForCommand()
         {
-            return _environment.MessageConsumer.ListenToQueueAsync(
+            return MessageConsumer.ListenToQueueAsync(
                 _environment.GetRoute(RouteKey),
                 _environment.Credential);
         }
 
-        public virtual void Log(string message)
+        public virtual void Log(Guid ticket, string message)
         {
-            _environment.MessageProducer.Publish(
+            MessageProducer.Publish(
                 new CommandResultMessage
                 {
                     RoutingKey = _environment.GetLogRoute(RouteKey),
-                    Ticket = Ticket,
+                    Ticket = ticket,
                     CommandResult = message,
                 },
                 _environment.Credential);
