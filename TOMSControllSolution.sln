@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Local.testsettings = Local.testsettings
 		TOMSControllSolution2.vsmdi = TOMSControllSolution2.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+		twoprocs.bat = twoprocs.bat
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TOMSCommandProcessorConsole", "TOMSCommandProcessorConsole\TOMSCommandProcessorConsole.csproj", "{53280456-A50B-4752-85DC-1990D22D5B23}"

@@ -18,7 +18,7 @@ namespace TOMSCommandConsole
             {
                 Jobs = new List<Job> { 
                          new Job {
-                         Name = "List Shares",
+                         Name = "List Shares and Directories",
                          Commands = new List<Command>() { 
                            new Command("NET Command","listshares") 
                            {  

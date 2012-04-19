@@ -9,6 +9,7 @@ namespace TOMSControl.Domain
     public interface ICommandProcessor
     {
         Task ListenForCommand();
+        void HandleMessage(Message msg);
     }
 
     public class CommandProcessor : ICommandProcessor
@@ -57,7 +58,7 @@ namespace TOMSControl.Domain
                 _environment.Credential);
         }
 
-        public virtual void Log(Guid ticket, string message)
+        public void Log(Guid ticket, string message)
         {
             MessageProducer.Publish(
                 new CommandResultMessage

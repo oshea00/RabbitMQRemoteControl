@@ -1,0 +1,7 @@
+@echo off
+
+start TOMSCommandConsole\bin\debug\TOMSCommandConsole
+start TOMSCommandProcessorConsole\bin\debug\TOMSCommandProcessorConsole listdir
+start TOMSCommandProcessorConsole\bin\debug\TOMSCommandProcessorConsole listshares
+
+

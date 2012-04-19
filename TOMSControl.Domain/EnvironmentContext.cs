@@ -18,14 +18,11 @@ namespace TOMSControl.Domain
         {
             Name = ConfigurationManager.AppSettings.Get("name");
             RootRouteKey = ConfigurationManager.AppSettings.Get("rootroute");
-            var Host = ConfigurationManager.AppSettings.Get("host");
             var secureAppSettings = (NameValueCollection) ConfigurationManager.GetSection("secureAppSettings");
-            var Username = secureAppSettings["username"];
-            var Password = secureAppSettings["password"];
-            Credential = new NetworkCredential { 
-                  Domain = Host,
-                  UserName = Username,
-                  Password = Password
+            Credential = new NetworkCredential {
+                  Domain = ConfigurationManager.AppSettings.Get("host"),
+                  UserName = secureAppSettings["username"],
+                  Password = secureAppSettings["password"]
             };
         }
 
